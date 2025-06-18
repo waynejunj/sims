@@ -1,0 +1,33 @@
+.navbar-avatar {
+  width: 40px;
+  height: 40px;
+  background-color: #fff;
+  color: #0d6efd; /* Bootstrap's primary blue */
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.navbar-username {
+  color: #fff;
+  margin-left: 8px;
+  font-size: 16px;
+}
+
+.navbar-brand {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.nav-link {
+  color: #fff !important;
+  transition: color 0.2s;
+}
+
+.nav-link:hover {
+  color: #d0e7ff !important; /* Lighter blue for hover */
+}

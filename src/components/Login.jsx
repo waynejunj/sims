@@ -1,101 +1,84 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import 'bootstrap/dist/css/bootstrap.min.css';
 import axios from 'axios';
 
-function Login() {  // Remove `setUser` from props
+function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
-  e.preventDefault();
-  setIsLoading(true);
-  setError('');
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
 
-  try {
-    const response = await axios.post('https://sims21.pythonanywhere.com/login', { username, password });
-    const data = response.data;
+    try {
+      const response = await axios.post(
+        'http://sims21.pythonanywhere.com/login',
+        new URLSearchParams({
+          username,
+          password,
+        }),
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+        }
+      );
 
-    // Save user data to localStorage (no setUser)
-    localStorage.setItem('userData', JSON.stringify({
-      user_id: data.user_id,
-      username: data.username,
-      role: data.role,
-      full_name: data.full_name,
-      email: data.email,
-      avatar: data.avatar,
-    }));
-
-    // Redirect (Navbar will auto-update due to storage event)
-    navigate(data.role === 'admin' ? '/admin' : '/staff');
-
-  } catch (err) {
-    setError(err.response?.data?.message || 'Login failed');
-  } finally {
-    setIsLoading(false);
-  }
+      localStorage.setItem('user', JSON.stringify(response.data));
+      navigate('/dashboard');
+    } catch (err) {
+      setError(err.response?.data?.message || 'Login failed. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="container mt-5">
-      <div className="row justify-content-center">
-        <div className="col-md-6 col-lg-4">
-          <div className="card shadow">
-            <div className="card-header bg-warning text-white">
-              <h3 className="text-center mb-0">SIMS Login</h3>
-            </div>
-            <div className="card-body">
-              {error && (
-                <div className="alert alert-danger" role="alert">
-                  {error}
-                </div>
-              )}
-              <form onSubmit={handleSubmit}>
-                <div className="mb-3">
-                  <label htmlFor="username" className="form-label">Username</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    id="username"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    required
-                  />
-                </div>
-                <div className="mb-3">
-                  <label htmlFor="password" className="form-label">Password</label>
-                  <input
-                    type="password"
-                    className="form-control"
-                    id="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                  />
-                </div>
-                <div className="d-grid gap-2">
-                  <button
-                    type="submit"
-                    className="btn btn-warning"
-                    disabled={isLoading}
-                  >
-                    {isLoading ? (
-                      <>
-                        <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                        Logging in...
-                      </>
-                    ) : (
-                      'Login'
-                    )}
-                  </button>
-                </div>
-              </form>
-            </div>
+    <div className="min-vh-100 d-flex align-items-center justify-content-center bg-primary bg-opacity-10">
+      <div className="bg-white p-4 rounded shadow w-100" style={{ maxWidth: '400px' }}>
+        <h2 className="text-primary fw-bold mb-4 text-center">Login</h2>
+        {error && <div className="alert alert-danger">{error}</div>}
+        <form onSubmit={handleLogin}>
+          <div className="mb-3">
+            <label htmlFor="username" className="form-label text-primary">Username</label>
+            <input
+              type="text"
+              id="username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              className="form-control"
+              required
+            />
           </div>
-        </div>
+          <div className="mb-3">
+            <label htmlFor="password" className="form-label text-primary">Password</label>
+            <input
+              type="password"
+              id="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="form-control"
+              required
+            />
+          </div>
+          <button
+            type="submit"
+            disabled={loading}
+            className={`btn btn-primary w-100 ${loading ? 'disabled' : ''}`}
+          >
+            {loading ? 'Logging in...' : 'Login'}
+          </button>
+        </form>
+        <p className="mt-3 text-center text-primary">
+          Don't have an account?{' '}
+          <a href="/register" className="text-primary text-decoration-underline">
+            Register
+          </a>
+        </p>
       </div>
     </div>
   );
