@@ -24,7 +24,7 @@ function Register() {
     try {
       const user = JSON.parse(localStorage.getItem('user') || '{}');
       const response = await axios.post(
-        'http://sims21.pythonanywhere.com/register',
+        'http://127.0.0.1:5000/register',
         new URLSearchParams({
           username,
           full_name: fullName,
